@@ -1,7 +1,4 @@
 <h1>Raycasting test engine<h1>
-![banner](https://user-images.githubusercontent.com/84816159/232949382-d257211d-924b-403e-9b3f-4eab6e75db69.png)
-
-
 
 <h2>Hi, I'm luife and I've created a small raycasting engine.<h2>
 
