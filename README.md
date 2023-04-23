@@ -1,6 +1,10 @@
-<h1>Raycasting test engine<h1>
+<h1>JavaScript Raycasting Test Engine<h1>
 
 <h2>Hi, I'm luife and I've created a small raycasting engine.<h2>
+Try it in PC: https://luifegames.github.io/raycastingengine.github.io/
+
+<h3>Controls:<h3>
+Mouse and wasd to move.
 
 This is a technique used in computer graphics to render 3D images in real time, and is the basis for many famous video games, such as Doom, Wolfenstein 3D, and Duke Nukem 3D. In the following, I will describe how the raycasting engine works step by step and give some examples of popular video games that use it.
 
