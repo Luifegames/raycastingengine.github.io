@@ -21,7 +21,6 @@ const COLORS = {
     floor: "#752300",
     wall: "#013aa6",
     wallDark: "#012975"
-
 }
 
 canvas.setAttribute("width", SCREEN_WIDTH);
@@ -152,7 +151,6 @@ function movePlayer() {
     const cellX = Math.floor(xChecker / CELL_SIZE)
     const cellY = Math.floor(yChecker / CELL_SIZE)
 
-
     wall = map[cellY][cellX]
 
     if (!wall) {
@@ -257,7 +255,6 @@ function getRay() {
 function fixFishEyes(distance, angle, playerAngle) {
     const diff = angle - playerAngle;
     return distance * Math.cos(diff);
-
 }
 
 function renderScene(rays) {
@@ -408,7 +405,6 @@ document.addEventListener("mousemove", function (e) {
     var w = document.width
     var h = document.height
 });
-
 
 document.addEventListener("keyup", (e) => {
     if ((e.key == 'w' || e.key == 's') || (e.key == 'W' || e.key == 'S')) {
