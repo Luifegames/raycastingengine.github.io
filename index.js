@@ -52,6 +52,17 @@ const map = [
     [1, 1, 1, 1, 4, 1, 1, 1, 1],
 ]
 
+function normalizeAngle(angle) {
+    let res = angle;
+    if (angle < -Math.PI) {
+        res += 2.0 * Math.PI
+    }
+
+    if (angle > Math.PI) {
+        res -= 2.0 * Math.PI
+    }
+    return res;
+}
 //Class for render enemys sprites
 class Sprite {
     constructor(x, y, image) {
@@ -80,13 +91,7 @@ class Sprite {
         this.angle = anglePlayerToObject - player.angle
 
         //Normalize
-        if (this.angle < -Math.PI) {
-            this.angle += 2.0 * Math.PI
-        }
-
-        if (this.angle > Math.PI) {
-            this.angle -= 2.0 * Math.PI
-        }
+        this.angle = normalizeAngle(this.angle);
 
         var scale = canvas.width / this.distance / 2
 
@@ -98,8 +103,7 @@ class Sprite {
             var p = parseInt(xSprite + i * scale)
 
 
-            if (this.distance < zBuffer[p])
-
+            if (this.distance < zBuffer[p]) {
                 context.drawImage(
                     this.image,
                     i,
@@ -110,6 +114,8 @@ class Sprite {
                     ySprite,
                     scale,
                     this.image.height * scale);
+            }
+
         }
     }
 }
@@ -126,8 +132,8 @@ const player = {
 const sprites = []
 const zBuffer = []
 sprites[0] = new Sprite(200, 100, enemy_sprite);
-sprites[1] = new Sprite(100, 200, enemy_sprite);
-sprites[2] = new Sprite(400, 400, enemy_sprite);
+// sprites[1] = new Sprite(100, 200, enemy_sprite);
+// sprites[2] = new Sprite(400, 400, enemy_sprite);
 
 function clearScreen() {
     context.fillStyle = "red"
@@ -446,6 +452,7 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousemove", function (e) {
+    if (!pointerLocked) return;
     var x = e.clientX;
     var y = e.clientY;
 
@@ -454,6 +461,6 @@ document.addEventListener("mousemove", function (e) {
 });
 
 
-document.addEventListener("mousemove", (e) => {
-    if (pointerLocked) player.angle += toRadiant(e.movementX)
+canvas.addEventListener("mousemove", (e) => {
+    if (pointerLocked) player.angle = normalizeAngle(player.angle + toRadiant(e.movementX));
 })
