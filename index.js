@@ -5,6 +5,7 @@ const context = canvas.getContext("2d");
 //Size screen
 const SCREEN_WIDTH = window.innerHeight;
 const SCREEN_HEIGHT = window.innerHeight;
+const CAMERA_NEEDS_POINTER_LOCK = false;
 
 //fps
 const TICK = 15;
@@ -462,5 +463,6 @@ document.addEventListener("mousemove", function (e) {
 
 
 canvas.addEventListener("mousemove", (e) => {
-    if (pointerLocked) player.angle = normalizeAngle(player.angle + toRadiant(e.movementX));
+    if (pointerLocked || !CAMERA_NEEDS_POINTER_LOCK)
+        player.angle = normalizeAngle(player.angle + toRadiant(e.movementX));
 })
