@@ -453,7 +453,7 @@ document.addEventListener("keyup", (e) => {
 
 
 document.addEventListener("mousemove", function (e) {
-    if (!pointerLocked) return;
+    if (!pointerLocked && CAMERA_NEEDS_POINTER_LOCK) return;
     var x = e.clientX;
     var y = e.clientY;
 
