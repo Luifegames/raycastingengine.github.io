@@ -379,24 +379,71 @@ function toRadiant(deg) {
 setInterval(gameLoop, TICK);
 
 //Input events
+let pointerLocked = false;
+// Request pointer lock when the canvas is clicked
+canvas.addEventListener('click', () => {
+    canvas.requestPointerLock();
+});
+
+document.addEventListener('pointerlockchange', (e) => {
+    if (e.target.pointerLockElement !== canvas){
+        pointerLocked = false;
+    } else {
+        pointerLocked = true;
+    }
+});
+
+function addCapped(a, b, min, max) {
+    let result = a + b;
+    result = Math.max(result, min);
+    result = Math.min(result, max);
+    return result;
+}
 
 document.addEventListener("keydown", (e) => {
+    let dSpeedX = 0;
+    let dSpeedY = 0;
     if (e.key == 'w' || e.key == 'W') {
-        player.speedX = 2
+        dSpeedX = 2;
     }
 
     if (e.key == 's' || e.key == 'S') {
-        player.speedX = -2
+        dSpeedX = -2;
     }
 
     if (e.key == 'a' || e.key == 'A') {
-        player.speedY = -2
+        dSpeedY = -2;
     }
 
     if (e.key == 'd' || e.key == 'D') {
-        player.speedY = 2
+        dSpeedY = 2;
     }
+    player.speedX = addCapped(dSpeedX,player.speedX,-2,2);
+    player.speedY = addCapped(dSpeedY,player.speedY,-2,2);
 })
+
+document.addEventListener("keyup", (e) => {
+    let dSpeedX = 0;
+    let dSpeedY = 0;
+    if (e.key == 'w' || e.key == 'W') {
+        dSpeedX = -2;
+    }
+
+    if (e.key == 's' || e.key == 'S') {
+        dSpeedX = 2;
+    }
+
+    if (e.key == 'a' || e.key == 'A') {
+        dSpeedY = 2;
+    }
+
+    if (e.key == 'd' || e.key == 'D') {
+        dSpeedY = -2;
+    }
+    player.speedX = addCapped(dSpeedX,player.speedX,-2,2);
+    player.speedY = addCapped(dSpeedY,player.speedY,-2,2);
+})
+
 
 document.addEventListener("mousemove", function (e) {
     var x = e.clientX;
@@ -406,15 +453,7 @@ document.addEventListener("mousemove", function (e) {
     var h = document.height
 });
 
-document.addEventListener("keyup", (e) => {
-    if ((e.key == 'w' || e.key == 's') || (e.key == 'W' || e.key == 'S')) {
-        player.speedX = 0
-    }
-    if ((e.key == 'a' || e.key == 'd') || (e.key == 'A' || e.key == 'D')) {
-        player.speedY = 0
-    }
-})
 
 document.addEventListener("mousemove", (e) => {
-    player.angle += toRadiant(e.movementX)
+    if (pointerLocked) player.angle += toRadiant(e.movementX)
 })
