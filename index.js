@@ -5,6 +5,7 @@ const context = canvas.getContext("2d");
 //Size screen
 const SCREEN_WIDTH = window.innerHeight;
 const SCREEN_HEIGHT = window.innerHeight;
+const CAMERA_NEEDS_POINTER_LOCK = false;
 
 //fps
 const TICK = 15;
@@ -52,6 +53,17 @@ const map = [
     [1, 1, 1, 1, 4, 1, 1, 1, 1],
 ]
 
+function normalizeAngle(angle) {
+    let res = angle;
+    if (angle < -Math.PI) {
+        res += 2.0 * Math.PI
+    }
+
+    if (angle > Math.PI) {
+        res -= 2.0 * Math.PI
+    }
+    return res;
+}
 //Class for render enemys sprites
 class Sprite {
     constructor(x, y, image) {
@@ -80,13 +92,7 @@ class Sprite {
         this.angle = anglePlayerToObject - player.angle
 
         //Normalize
-        if (this.angle < -Math.PI) {
-            this.angle += 2.0 * Math.PI
-        }
-
-        if (this.angle > Math.PI) {
-            this.angle -= 2.0 * Math.PI
-        }
+        this.angle = normalizeAngle(this.angle);
 
         var scale = canvas.width / this.distance / 2
 
@@ -98,8 +104,7 @@ class Sprite {
             var p = parseInt(xSprite + i * scale)
 
 
-            if (this.distance < zBuffer[p])
-
+            if (this.distance < zBuffer[p]) {
                 context.drawImage(
                     this.image,
                     i,
@@ -110,6 +115,8 @@ class Sprite {
                     ySprite,
                     scale,
                     this.image.height * scale);
+            }
+
         }
     }
 }
@@ -126,8 +133,8 @@ const player = {
 const sprites = []
 const zBuffer = []
 sprites[0] = new Sprite(200, 100, enemy_sprite);
-sprites[1] = new Sprite(100, 200, enemy_sprite);
-sprites[2] = new Sprite(400, 400, enemy_sprite);
+ sprites[1] = new Sprite(100, 200, enemy_sprite);
+ sprites[2] = new Sprite(400, 400, enemy_sprite);
 
 function clearScreen() {
     context.fillStyle = "red"
@@ -379,26 +386,74 @@ function toRadiant(deg) {
 setInterval(gameLoop, TICK);
 
 //Input events
+let pointerLocked = false;
+// Request pointer lock when the canvas is clicked
+canvas.addEventListener('click', () => {
+    canvas.requestPointerLock();
+});
+
+document.addEventListener('pointerlockchange', (e) => {
+    if (e.target.pointerLockElement !== canvas){
+        pointerLocked = false;
+    } else {
+        pointerLocked = true;
+    }
+});
+
+function addCapped(a, b, min, max) {
+    let result = a + b;
+    result = Math.max(result, min);
+    result = Math.min(result, max);
+    return result;
+}
 
 document.addEventListener("keydown", (e) => {
+    let dSpeedX = 0;
+    let dSpeedY = 0;
     if (e.key == 'w' || e.key == 'W') {
-        player.speedX = 2
+        dSpeedX = 2;
     }
 
     if (e.key == 's' || e.key == 'S') {
-        player.speedX = -2
+        dSpeedX = -2;
     }
 
     if (e.key == 'a' || e.key == 'A') {
-        player.speedY = -2
+        dSpeedY = -2;
     }
 
     if (e.key == 'd' || e.key == 'D') {
-        player.speedY = 2
+        dSpeedY = 2;
     }
+    player.speedX = addCapped(dSpeedX,player.speedX,-2,2);
+    player.speedY = addCapped(dSpeedY,player.speedY,-2,2);
 })
 
+document.addEventListener("keyup", (e) => {
+    let dSpeedX = 0;
+    let dSpeedY = 0;
+    if (e.key == 'w' || e.key == 'W') {
+        dSpeedX = -2;
+    }
+
+    if (e.key == 's' || e.key == 'S') {
+        dSpeedX = 2;
+    }
+
+    if (e.key == 'a' || e.key == 'A') {
+        dSpeedY = 2;
+    }
+
+    if (e.key == 'd' || e.key == 'D') {
+        dSpeedY = -2;
+    }
+    player.speedX = addCapped(dSpeedX,player.speedX,-2,2);
+    player.speedY = addCapped(dSpeedY,player.speedY,-2,2);
+})
+
+
 document.addEventListener("mousemove", function (e) {
+    if (!pointerLocked && CAMERA_NEEDS_POINTER_LOCK) return;
     var x = e.clientX;
     var y = e.clientY;
 
@@ -406,15 +461,8 @@ document.addEventListener("mousemove", function (e) {
     var h = document.height
 });
 
-document.addEventListener("keyup", (e) => {
-    if ((e.key == 'w' || e.key == 's') || (e.key == 'W' || e.key == 'S')) {
-        player.speedX = 0
-    }
-    if ((e.key == 'a' || e.key == 'd') || (e.key == 'A' || e.key == 'D')) {
-        player.speedY = 0
-    }
-})
 
-document.addEventListener("mousemove", (e) => {
-    player.angle += toRadiant(e.movementX)
+canvas.addEventListener("mousemove", (e) => {
+    if (pointerLocked || !CAMERA_NEEDS_POINTER_LOCK)
+        player.angle = normalizeAngle(player.angle + toRadiant(e.movementX));
 })
